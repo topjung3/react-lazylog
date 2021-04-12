@@ -56,6 +56,8 @@ export default class LazyLog extends Component {
      * Options object which will be passed through to websocket.
      */
     websocketOptions: shape({
+      type: string,
+      topic: string,
       // a callback which is invoked when the websocket connection is opened.
       onOpen: func,
       // a callback which is invoked when the websocket connection is closed.

@@ -1,7 +1,8 @@
 {
-  "name": "react-lazylog",
-  "version": "4.5.3",
+  "name": "@kakao/react-lazylog",
+  "version": "4.5.4-stomp.0",
   "description": "React Lazy Logviewer",
+  "author": "henry.jung <henry.jung@kakaocorp.com>",
   "license": "MPL-2.0",
   "repository": "mozilla-frontend-infra/react-lazylog",
   "main": "build/index.js",
@@ -35,6 +36,8 @@
   },
   "dependencies": {
     "@mattiasbuelens/web-streams-polyfill": "^0.2.0",
+    "@stomp/stompjs": "^6.1.0",
+    "sockjs-client": "^1.5.1",
     "fetch-readablestream": "^0.2.0",
     "immutable": "^3.8.2",
     "mitt": "^1.1.2",
