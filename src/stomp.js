@@ -6,7 +6,7 @@ import { encode } from './encoding';
 import { bufferConcat, convertBufferToLines } from './utils';
 
 export default (url, options) => {
-  const { topic, formatMessage } = options;
+  const { topic, formatMessage, debug } = options;
   const emitter = mitt();
   let encodedLog = new Uint8Array();
   let overage = null;
@@ -50,6 +50,10 @@ export default (url, options) => {
       const onClose = () => {};
 
       ws.connect({}, onConnect, onError, onClose);
+
+      if (!debug) {
+        ws.debug = () => {};
+      }
 
       emitter.on('abort', () => ws.disconnect(() => {}));
     } catch (err) {
