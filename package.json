@@ -1,6 +1,6 @@
 {
   "name": "@kakao/react-lazylog",
-  "version": "4.5.4-stomp.1",
+  "version": "4.5.4-stomp.2",
   "description": "React Lazy Logviewer",
   "author": "henry.jung <henry.jung@kakaocorp.com>",
   "license": "MPL-2.0",
