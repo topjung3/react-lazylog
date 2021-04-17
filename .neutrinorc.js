@@ -10,9 +10,9 @@ module.exports = {
       }
     }],
     (neutrino) => {
-      if (neutrino.options.command === 'styleguide:start') {
+      // if (neutrino.options.command === 'styleguide:start') {
         neutrino.config.module.rules.delete('lint');
-      }
+      // }
     },
   ],
 };

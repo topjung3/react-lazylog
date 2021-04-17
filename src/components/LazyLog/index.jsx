@@ -20,7 +20,7 @@ import {
   getScrollIndex,
   getHighlightRange,
   searchFormatPart,
-  convertBufferToLines,
+  convertBufferToLines, bufferConcat,
 } from '../../utils';
 import Line from '../Line';
 import Loading from '../Loading';
@@ -347,6 +347,53 @@ export default class LazyLog extends Component {
       this.emitter.on('end', this.handleEnd);
       this.emitter.on('error', this.handleError);
       this.emitter.emit('start');
+    }
+  }
+
+  requestBulk(textList) {
+    const convert = text => {
+      const encodedLog = encode(text);
+      return {
+        encodedLog,
+        ...convertBufferToLines(encodedLog, null, true)
+      }
+    };
+
+    this.endRequest();
+
+    if (typeof textList === 'object' && Array.isArray(textList) && textList.length > 0) {
+      const _encodedLog = [];
+      const _lines = [];
+      const _remaining = null;
+
+      textList.forEach(text => {
+        const { encodedLog, lines, remaining } = convert(text);
+
+        if (remaining) {
+          console.warn('Remain unconverted string: ' + remaining);
+        }
+        _encodedLog.push(encodedLog);
+        _lines.push(...lines);
+      });
+
+      const newline = encode('\n');
+      const length = _encodedLog.reduce((acc, n) => acc + n.length + newline.length, 0);
+      const mergedEncodedLog = new Uint8Array(length);
+
+      _encodedLog.reduce((prevLength, log) => {
+        mergedEncodedLog.set(log, prevLength);
+        mergedEncodedLog.set(newline, prevLength + log.length);
+        return prevLength + log.length + newline.length;
+      }, 0);
+
+      const prevEncodedLog = this.encodedLog ? this.encodedLog : new Uint8Array();
+      const fullLog = bufferConcat(prevEncodedLog, mergedEncodedLog);
+
+      this.handleUpdate({
+        lines: _remaining ? _lines.concat(_remaining) : _lines,
+        encodedLog: fullLog,
+      });
+      this.handleEnd(fullLog);
     }
   }
 

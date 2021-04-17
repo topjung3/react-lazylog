@@ -22,7 +22,7 @@
     "prepare": "neutrino build",
     "lint": "neutrino lint",
     "start": "neutrino styleguide:start",
-    "precommit": "neutrino stage",
+    "precommit": "neutrino build",
     "deploy": "neutrino styleguide:build && gh-pages --remote upstream -d styleguide"
   },
   "devDependencies": {

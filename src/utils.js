@@ -52,7 +52,7 @@ export const bufferConcat = (a, b) => {
   return buffer;
 };
 
-export const convertBufferToLines = (current, previous) => {
+export const convertBufferToLines = (current, previous, singleLine = false) => {
   const buffer = previous ? bufferConcat(previous, current) : current;
   const { length } = buffer;
   let lastNewlineIndex = 0;
@@ -62,7 +62,7 @@ export const convertBufferToLines = (current, previous) => {
       const current = buffer[index];
       const next = buffer[index + 1];
 
-      if (isNewline(current, next)) {
+      if (isNewline(current, next) && !singleLine) {
         lines.push(buffer.subarray(lastNewlineIndex, index));
         lastNewlineIndex =
           current === ENCODED_CARRIAGE_RETURN && next === ENCODED_NEWLINE
@@ -73,6 +73,11 @@ export const convertBufferToLines = (current, previous) => {
       } else {
         index += 1;
       }
+    }
+
+    if (singleLine) {
+      lines.push(buffer.subarray(lastNewlineIndex, index));
+      lastNewlineIndex = index;
     }
   });
 

@@ -58,7 +58,6 @@ export const searchLines = (rawKeywords, rawLog, isCaseInsensitive) => {
     keywords = keywords.toLowerCase();
     log = encode(decode(log).toLowerCase());
   }
-
   const results = searchIndexes(keywords, log);
   const linesRanges = getLinesLengthRanges(log);
   const maxLineRangeIndex = linesRanges.length;
