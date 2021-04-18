@@ -714,7 +714,8 @@ export default class LazyLog extends Component {
     const number = isFilteringLinesWithMatches
       ? resultLineUniqueIndexes[index]
       : index + 1 + offset;
-    const extraInfo = this.extraInfo[number] ? this.extraInfo[number] : {};
+    const extraInfo =
+      this.extraInfo && this.extraInfo[number] ? this.extraInfo[number] : {};
 
     return (
       <Line
