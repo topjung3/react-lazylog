@@ -25,7 +25,7 @@ export default class LineContent extends Component {
     /**
      * The line number being rendered.
      */
-    number: number,
+    number,
     /**
      * Execute a function against each line part's
      * `text` property in `data` to process and
@@ -38,7 +38,7 @@ export default class LineContent extends Component {
   static defaultProps = {
     formatPart: null,
     style: null,
-    onClick: null
+    onClick: null,
   };
 
   render() {

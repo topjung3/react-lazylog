@@ -25,7 +25,7 @@ export default class Line extends Component {
     onRowClick: func,
     className: string,
     highlightClassName: string,
-    extraInfo: object
+    extraInfo: object,
   };
 
   static defaultProps = {
@@ -37,7 +37,7 @@ export default class Line extends Component {
     onRowClick: () => {},
     className: '',
     highlightClassName: '',
-    extraInfo: {}
+    extraInfo: {},
   };
 
   render() {
@@ -76,7 +76,7 @@ export default class Line extends Component {
         />
         <LineContent
           number={number}
-          onClick={(e) => onRowClick(e, extraInfo)}
+          onClick={e => onRowClick(e, extraInfo)}
           formatPart={formatPart}
           data={data}
         />

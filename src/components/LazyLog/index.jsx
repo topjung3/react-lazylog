@@ -20,7 +20,8 @@ import {
   getScrollIndex,
   getHighlightRange,
   searchFormatPart,
-  convertBufferToLines, bufferConcat,
+  convertBufferToLines,
+  bufferConcat,
 } from '../../utils';
 import Line from '../Line';
 import Loading from '../Loading';
@@ -357,51 +358,62 @@ export default class LazyLog extends Component {
 
   requestBulk(textList, extraInfoList = []) {
     const { nowrap } = this.props;
+    const convert = t => {
+      let text = t;
 
-    const convert = text => {
       if (nowrap) {
-        text = text + '\0';
+        text += '\0';
       }
+
       const encodedLog = encode(text);
+
       return {
         encodedLog,
-        ...convertBufferToLines(encodedLog, null, nowrap)
-      }
+        ...convertBufferToLines(encodedLog, null, nowrap),
+      };
     };
 
     this.endRequest();
 
-    if (typeof textList === 'object' && Array.isArray(textList) && textList.length > 0) {
-      const _encodedLog = [];
-      const _lines = [];
-      const _remaining = null;
+    if (
+      typeof textList === 'object' &&
+      Array.isArray(textList) &&
+      textList.length > 0
+    ) {
+      const encodedLogResult = [];
+      const linesResult = [];
+      const remainingResult = null;
 
       textList.forEach(text => {
-        const { encodedLog, lines, remaining } = convert(text);
+        const { encodedLog, lines } = convert(text);
 
-        if (remaining) {
-          console.warn('Remain unconverted string: ' + remaining);
-        }
-        _encodedLog.push(encodedLog);
-        _lines.push(...lines);
+        encodedLogResult.push(encodedLog);
+        linesResult.push(...lines);
       });
 
-      const length = _encodedLog.reduce((acc, n) => acc + n.length, 0);
+      const length = encodedLogResult.reduce((acc, n) => acc + n.length, 0);
       const mergedEncodedLog = new Uint8Array(length);
 
-      _encodedLog.reduce((prevLength, log) => {
+      encodedLogResult.reduce((prevLength, log) => {
         mergedEncodedLog.set(log, prevLength);
+
         return prevLength + log.length;
       }, 0);
 
-      const extraInfo = this.extraInfo ? this.extraInfo.concat(extraInfoList) : extraInfoList;
-      const prevEncodedLog = this.encodedLog ? this.encodedLog : new Uint8Array();
+      const extraInfo = this.extraInfo
+        ? this.extraInfo.concat(extraInfoList)
+        : extraInfoList;
+      const prevEncodedLog = this.encodedLog
+        ? this.encodedLog
+        : new Uint8Array();
       const fullLog = bufferConcat(prevEncodedLog, mergedEncodedLog);
 
       this.handleUpdate({
-        lines: _remaining ? _lines.concat(_remaining) : _lines,
+        lines: remainingResult
+          ? linesResult.concat(remainingResult)
+          : linesResult,
         encodedLog: fullLog,
-        extraInfo
+        extraInfo,
       });
       this.handleEnd(fullLog);
     }
@@ -470,11 +482,11 @@ export default class LazyLog extends Component {
     }
   };
 
-  handleRowClick = (e, extraInfo) =>  {
+  handleRowClick = (e, extraInfo) => {
     if (this.props.onRowClick) {
       this.props.onRowClick(e, extraInfo);
     }
-  }
+  };
 
   handleHighlight = e => {
     const { onHighlight } = this.props;

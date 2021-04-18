@@ -14,7 +14,7 @@ export default class LineNumber extends Component {
     /**
      * The line number to display in the anchor.
      */
-    number: number,
+    number,
     /**
      * Specify whether this line is highlighted.
      */
