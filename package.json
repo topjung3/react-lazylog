@@ -1,7 +1,8 @@
 {
-  "name": "react-lazylog",
+  "name": "@kakao/react-lazylog",
   "version": "4.5.4-bulk.1",
   "description": "React Lazy Logviewer",
+  "author": "henry.jung <henry.jung@kakaocorp.com>",
   "license": "MPL-2.0",
   "repository": "mozilla-frontend-infra/react-lazylog",
   "main": "build/index.js",
