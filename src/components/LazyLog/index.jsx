@@ -334,9 +334,9 @@ export default class LazyLog extends Component {
   request() {
     const { text, url } = this.props;
 
-    if (text && text.length > 0) {
-      this.endRequest();
+    this.endRequest();
 
+    if (text) {
       const encodedLog = encode(text);
       const { lines, remaining } = convertBufferToLines(encodedLog);
 
@@ -788,7 +788,8 @@ export default class LazyLog extends Component {
       filteredLines = List(),
       count,
     } = this.state;
-    const rowCount = isFilteringLinesWithMatches ? filteredLines.size : count;
+    const rowCount =
+      (isFilteringLinesWithMatches ? filteredLines.size : count) || 0;
 
     return (
       <Fragment>
