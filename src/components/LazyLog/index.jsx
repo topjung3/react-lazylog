@@ -140,6 +140,7 @@ export default class LazyLog extends Component {
      * of the highlighted line numbers.
      */
     onHighlight: func,
+    onRowClick: func,
     /**
      * A fixed row height in pixels. Controls how tall a line is,
      * as well as the `lineHeight` style of the line's text.
@@ -208,6 +209,7 @@ export default class LazyLog extends Component {
     extraLines: 0,
     onError: null,
     onHighlight: null,
+    onRowClick: null,
     onLoad: null,
     formatPart: null,
     websocketOptions: {},
@@ -353,7 +355,7 @@ export default class LazyLog extends Component {
     }
   }
 
-  requestBulk(textList) {
+  requestBulk(textList, extraInfoList = []) {
     const { nowrap } = this.props;
 
     const convert = text => {
@@ -392,12 +394,14 @@ export default class LazyLog extends Component {
         return prevLength + log.length;
       }, 0);
 
+      const extraInfo = this.extraInfo ? this.extraInfo.concat(extraInfoList) : extraInfoList;
       const prevEncodedLog = this.encodedLog ? this.encodedLog : new Uint8Array();
       const fullLog = bufferConcat(prevEncodedLog, mergedEncodedLog);
 
       this.handleUpdate({
         lines: _remaining ? _lines.concat(_remaining) : _lines,
         encodedLog: fullLog,
+        extraInfo
       });
       this.handleEnd(fullLog);
     }
@@ -413,8 +417,10 @@ export default class LazyLog extends Component {
     }
   }
 
-  handleUpdate = ({ lines: moreLines, encodedLog }) => {
+  handleUpdate = ({ lines: moreLines, encodedLog, extraInfo }) => {
     this.encodedLog = encodedLog;
+    this.extraInfo = extraInfo;
+
     const { scrollToLine, follow, stream, websocket } = this.props;
     const { lineLimit, count: previousCount } = this.state;
     let offset = 0;
@@ -463,6 +469,12 @@ export default class LazyLog extends Component {
       this.props.onError(err);
     }
   };
+
+  handleRowClick = (e, extraInfo) =>  {
+    if (this.props.onRowClick) {
+      this.props.onRowClick(e, extraInfo);
+    }
+  }
 
   handleHighlight = e => {
     const { onHighlight } = this.props;
@@ -690,6 +702,7 @@ export default class LazyLog extends Component {
     const number = isFilteringLinesWithMatches
       ? resultLineUniqueIndexes[index]
       : index + 1 + offset;
+    const extraInfo = this.extraInfo[number] ? this.extraInfo[number] : {};
 
     return (
       <Line
@@ -699,10 +712,12 @@ export default class LazyLog extends Component {
         style={style}
         key={key}
         number={number}
+        extraInfo={extraInfo}
         formatPart={this.handleFormatPart()}
         selectable={selectableLines}
         highlight={highlight.includes(number)}
         onLineNumberClick={this.handleHighlight}
+        onRowClick={this.handleRowClick}
         data={ansiparse(decode(linesToRender.get(index)))}
       />
     );

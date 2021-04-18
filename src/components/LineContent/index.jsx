@@ -21,6 +21,7 @@ export default class LineContent extends Component {
         text: string,
       })
     ).isRequired,
+    onClick: func,
     /**
      * The line number being rendered.
      */
@@ -37,10 +38,11 @@ export default class LineContent extends Component {
   static defaultProps = {
     formatPart: null,
     style: null,
+    onClick: null
   };
 
   render() {
-    const { data, formatPart, number, style } = this.props;
+    const { data, formatPart, number, style, onClick } = this.props;
 
     if (data) {
       const last = data[data.length - 1];
@@ -51,7 +53,7 @@ export default class LineContent extends Component {
     }
 
     return (
-      <span className={lineContent} style={style}>
+      <span className={lineContent} style={style} onClick={onClick}>
         {data &&
           data.map((part, n) => (
             <LinePart
