@@ -78,6 +78,8 @@ export default class LazyLog extends Component {
      */
     websocket: bool,
 
+    nowrap: bool,
+
     /**
      * Set the height in pixels for the component.
      * Defaults to `'auto'` if unspecified. When the `height` is `'auto'`,
@@ -187,6 +189,7 @@ export default class LazyLog extends Component {
   static defaultProps = {
     stream: false,
     websocket: false,
+    nowrap: false,
     height: 'auto',
     width: 'auto',
     follow: false,
@@ -351,11 +354,16 @@ export default class LazyLog extends Component {
   }
 
   requestBulk(textList) {
+    const { nowrap } = this.props;
+
     const convert = text => {
+      if (nowrap) {
+        text = text + '\0';
+      }
       const encodedLog = encode(text);
       return {
         encodedLog,
-        ...convertBufferToLines(encodedLog, null, true)
+        ...convertBufferToLines(encodedLog, null, nowrap)
       }
     };
 
@@ -376,14 +384,12 @@ export default class LazyLog extends Component {
         _lines.push(...lines);
       });
 
-      const newline = encode('\n');
-      const length = _encodedLog.reduce((acc, n) => acc + n.length + newline.length, 0);
+      const length = _encodedLog.reduce((acc, n) => acc + n.length, 0);
       const mergedEncodedLog = new Uint8Array(length);
 
       _encodedLog.reduce((prevLength, log) => {
         mergedEncodedLog.set(log, prevLength);
-        mergedEncodedLog.set(newline, prevLength + log.length);
-        return prevLength + log.length + newline.length;
+        return prevLength + log.length;
       }, 0);
 
       const prevEncodedLog = this.encodedLog ? this.encodedLog : new Uint8Array();
@@ -508,11 +514,11 @@ export default class LazyLog extends Component {
 
   handleSearch = keywords => {
     const { resultLines, searchKeywords } = this.state;
-    const { caseInsensitive, stream, websocket } = this.props;
+    const { nowrap, caseInsensitive, stream, websocket } = this.props;
     const currentResultLines =
       !stream && !websocket && keywords === searchKeywords
         ? resultLines
-        : searchLines(keywords, this.encodedLog, caseInsensitive);
+        : searchLines(keywords, this.encodedLog, caseInsensitive, nowrap);
 
     this.setState(
       {

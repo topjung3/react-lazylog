@@ -50,7 +50,7 @@ export const searchIndexes = (rawKeywords, rawLog) => {
   return results;
 };
 
-export const searchLines = (rawKeywords, rawLog, isCaseInsensitive) => {
+export const searchLines = (rawKeywords, rawLog, isCaseInsensitive, nowrap) => {
   let keywords = rawKeywords;
   let log = rawLog;
 
@@ -59,7 +59,7 @@ export const searchLines = (rawKeywords, rawLog, isCaseInsensitive) => {
     log = encode(decode(log).toLowerCase());
   }
   const results = searchIndexes(keywords, log);
-  const linesRanges = getLinesLengthRanges(log);
+  const linesRanges = getLinesLengthRanges(log, nowrap);
   const maxLineRangeIndex = linesRanges.length;
   const maxResultIndex = results.length;
   const resultLines = [];

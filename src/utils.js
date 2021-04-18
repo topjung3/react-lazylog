@@ -1,6 +1,7 @@
 import { List, Range } from 'immutable';
 import reactStringReplace from 'react-string-replace';
 
+export const END_LINE = 0; // \0
 export const ENCODED_NEWLINE = 10; // \n
 export const ENCODED_CARRIAGE_RETURN = 13; // \r
 export const SEARCH_BAR_HEIGHT = 45;
@@ -52,7 +53,7 @@ export const bufferConcat = (a, b) => {
   return buffer;
 };
 
-export const convertBufferToLines = (current, previous, singleLine = false) => {
+export const convertBufferToLines = (current, previous, nowrap = false) => {
   const buffer = previous ? bufferConcat(previous, current) : current;
   const { length } = buffer;
   let lastNewlineIndex = 0;
@@ -62,7 +63,7 @@ export const convertBufferToLines = (current, previous, singleLine = false) => {
       const current = buffer[index];
       const next = buffer[index + 1];
 
-      if (isNewline(current, next) && !singleLine) {
+      if (!nowrap && isNewline(current, next)) {
         lines.push(buffer.subarray(lastNewlineIndex, index));
         lastNewlineIndex =
           current === ENCODED_CARRIAGE_RETURN && next === ENCODED_NEWLINE
@@ -75,7 +76,7 @@ export const convertBufferToLines = (current, previous, singleLine = false) => {
       }
     }
 
-    if (singleLine) {
+    if (nowrap) {
       lines.push(buffer.subarray(lastNewlineIndex, index));
       lastNewlineIndex = index;
     }
@@ -88,7 +89,7 @@ export const convertBufferToLines = (current, previous, singleLine = false) => {
   };
 };
 
-export const getLinesLengthRanges = rawLog => {
+export const getLinesLengthRanges = (rawLog, nowrap = false) => {
   const { length } = rawLog;
   const linesRanges = [];
   let lastNewlineIndex = 0;
@@ -98,7 +99,11 @@ export const getLinesLengthRanges = rawLog => {
     const current = rawLog[index];
     const next = rawLog[index + 1];
 
-    if (isNewline(current, next)) {
+    if (nowrap && current === END_LINE) {
+      linesRanges.push(index);
+      lastNewlineIndex = index + 1;
+      index = lastNewlineIndex;
+    } else if (!nowrap && isNewline(current, next)) {
       linesRanges.push(index);
       lastNewlineIndex =
         current === ENCODED_CARRIAGE_RETURN && next === ENCODED_NEWLINE
