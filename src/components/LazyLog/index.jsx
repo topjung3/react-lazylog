@@ -334,9 +334,9 @@ export default class LazyLog extends Component {
   request() {
     const { text, url } = this.props;
 
-    this.endRequest();
+    if (text && text.length > 0) {
+      this.endRequest();
 
-    if (text) {
       const encodedLog = encode(text);
       const { lines, remaining } = convertBufferToLines(encodedLog);
 
